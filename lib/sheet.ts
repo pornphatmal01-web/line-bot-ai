@@ -63,15 +63,22 @@ function parseCsvRfc4180(text: string): string[][] {
 }
 
 function parseSheet(csv: string): FaqRow[] {
-  const rows = parseCsvRfc4180(csv.trim());
+  // strip UTF-8 BOM that Google Sheets adds
+  const cleaned = csv.replace(/^﻿/, "").trim();
+  const rows = parseCsvRfc4180(cleaned);
   if (rows.length < 2) return [];
 
   const headers = rows[0].map((h) => h.trim().toLowerCase());
+  console.log(`[sheet] headers found: ${JSON.stringify(headers)}, total rows: ${rows.length - 1}`);
+
   const questionIdx = headers.indexOf("question");
   const answerIdx = headers.indexOf("answer");
   const categoryIdx = headers.indexOf("category");
 
-  if (questionIdx === -1 || answerIdx === -1) return [];
+  if (questionIdx === -1 || answerIdx === -1) {
+    console.error(`[sheet] header mismatch — expected "question","answer" but got: ${JSON.stringify(headers)}`);
+    return [];
+  }
 
   return rows.slice(1).flatMap((row) => {
     const question = row[questionIdx]?.trim() ?? "";
