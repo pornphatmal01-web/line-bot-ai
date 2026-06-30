@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 // ตรวจสอบชื่อ model ที่ถูกต้องใน Google AI Studio ก่อน deploy
-const MODEL = "gemini-2.5-flash";
+const MODEL = "gemini-2.0-flash";
 const TIMEOUT_MS = 8_000;
 const DEFAULT_REPLY = "ขออภัยค่ะ เรื่องนี้ขอให้แอดมินติดต่อกลับไปนะคะ";
 
