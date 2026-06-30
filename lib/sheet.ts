@@ -104,7 +104,10 @@ export async function getFaqRows(): Promise<FaqRow[]> {
   if (!url) throw new Error("SHEET_CSV_URL is not set");
 
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(5000),
+    });
     if (!res.ok) throw new Error(`Sheet fetch failed: ${res.status}`);
     const text = await res.text();
     const rows = parseSheet(text);
@@ -121,5 +124,10 @@ export async function getFaqRows(): Promise<FaqRow[]> {
 }
 
 export function faqToString(rows: FaqRow[]): string {
-  return rows.map((r) => `Q: ${r.question}\nA: ${r.answer}`).join("\n\n");
+  return rows
+    .map((r) => {
+      const prefix = r.category ? `[${r.category}] ` : "";
+      return `${prefix}${r.question}\n→ ${r.answer}`;
+    })
+    .join("\n\n");
 }
