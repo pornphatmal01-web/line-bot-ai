@@ -33,6 +33,11 @@ export async function askGemini(
   const ai = new GoogleGenAI({ apiKey });
   const startTime = Date.now();
 
+  log.info("gemini.call", {
+    faqLength: faqCsvString.length,
+    userMessage: userMessage.substring(0, 50),
+  });
+
   const timeoutPromise = new Promise<never>((_, reject) =>
     setTimeout(() => reject(new Error("gemini_timeout")), TIMEOUT_MS)
   );
@@ -73,6 +78,7 @@ export async function askGemini(
     const text = result.text?.trim();
     if (!text) throw new Error("gemini_empty_response");
 
+    log.info("gemini.text_preview", { preview: text.substring(0, 80) });
     return text;
   } catch (err) {
     log.error("gemini.failed", {
